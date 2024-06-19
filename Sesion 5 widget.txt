@@ -1,0 +1,153 @@
+import 'dart:js_interop_unsafe';
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'demo interactividad flutter',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String _displayText = "Hello, Flutter!";
+  final TextEditingController _controller = TextEditingController();
+  Color _textColor = Colors.black;
+  final List<String> _items =[];
+  final TextEditingController _itemController = TextEditingController();
+
+
+  void _updateText() {
+    setState(() {
+      _displayText = _controller.text;
+    });
+  }
+
+  void _updateColor(Color color){
+    setState(() {
+      _textColor = color;
+    });
+  }
+
+void _addItem(){
+  setState(() {
+    if (_itemController.text.isNotEmpty){
+      _items.add(_itemController.text);
+      _itemController.clear();
+    }
+  });
+}
+
+void _removeItem(int index){
+  setState(() {
+    _items.removeAt(index);
+  });
+}
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('demo interactividad flutter'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: _controller,
+              decoration: InputDecoration(labelText: 'Ingresa algun texto'),
+            ),
+            SizedBox(height: 20),
+
+
+            DropdownButton<Color>(
+              value: _textColor,
+              items: const <DropdownMenuItem<Color>>[
+                DropdownMenuItem(
+                  value: Colors.black,
+                  child: Text('Black'),
+                ),
+                DropdownMenuItem(
+                  value: Colors.red,
+                  child: Text('Rojo'),
+                ),
+                DropdownMenuItem(
+                  value: Colors.green,
+                  child: Text('verde'),
+                ),
+                DropdownMenuItem(
+                  value: Colors.blue,
+                  child: Text('azul'),
+                ),
+              ],
+
+              onChanged: (Color? newColor){
+                if ( newColor != null) {
+                  _updateColor(newColor);
+                }
+              },
+              hint: Text('Selecciona un color'),
+            ),
+          SizedBox(height: 20),
+          Text(
+            _displayText,
+            style: TextStyle(fontSize: 24, color: _textColor),
+          ),
+
+         //   ElevatedButton(
+      //        onPressed: _updateText,
+       //       child: Text('Actualiza Texto'),
+        //    ),
+       //     SizedBox(height: 20),
+        
+          Divider(),
+
+          TextField(
+            controller: _itemController,
+            decoration: const InputDecoration(labelText: 'Agrega un nuevo item'),
+                  ),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: _addItem,
+            child: Text('agregar item'),
+                       ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: _items.length,
+                itemBuilder: (context, index){
+                  return ListTile(
+                    title: Text(_items[index]),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () => _removeItem(index),
+                    ),
+                  );
+                },
+
+
+            ),
+          )
+
+
+          ],
+        ),
+      ),
+    );
+  }
+}
